@@ -139,44 +139,47 @@ public class GroundControl {
     }
 
     // Painel customizado para desenhar o mapa e rovers
-    private static class MapaPanel extends JPanel {
-        private Image fundo;
-        private Map<String, Estado> estados;
-        private Map<String, Color> coresRovers;
+     private static class MapaPanel extends JPanel {
+          private Image fundo;
+          private Map<String, Estado> estados;
+          private Map<String, Color> coresRovers;
 
-        public MapaPanel(Image fundo, Map<String, Estado> estados, Map<String, Color> coresRovers) {
-            this.fundo = fundo;
-            this.estados = estados;
-            this.coresRovers = coresRovers;
-        }
+          public MapaPanel(Image fundo, Map<String, Estado> estados, Map<String, Color> coresRovers) {
+               this.fundo = fundo;
+               this.estados = estados;
+               this.coresRovers = coresRovers;
+          }
 
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
+          @Override
+          protected void paintComponent(Graphics g) {
+               super.paintComponent(g);
+               g.drawImage(fundo, 0, 0, getWidth(), getHeight(), this);
 
-            // Desenha rovers como pontos com cores consistentes
-            for (int i = 1; i <= estados.size(); i++) {
-                String nome = "R-" + i;
-                Estado e = estados.get(nome);
-                Color cor = coresRovers.get(nome);
-                g.setColor(cor);
+               // Desenha rovers como pontos com cores consistentes
+               for (int i = 1; i <= estados.size(); i++) {
+                    String nome = "R-" + i;
+                    Estado e = estados.get(nome);
+                    Color cor = coresRovers.get(nome);
+                    g.setColor(cor);
 
-                int x = (int) (e.getX() * getWidth() / 100);
-                int y = (int) (e.getY() * getHeight() / 100);
-                g.fillOval(x - 5, y - 5, 10, 10);
-            }
-        }
-    }
+                    int x = (int) (e.getX() * getWidth() / 100);
+                    int y = (int) (e.getY() * getHeight() / 100);
+                    g.fillOval(x - 5, y - 5, 20, 20);
+               }
+          }
+     }
 
     // Main
     public static void main(String[] args) {
         Map<String, Estado> estados = new HashMap<>();
-        estados.put("R-1", new Estado(100, 100, EstadoOperacional.EM_MISSAO, 85, 0.0f));
-        estados.put("R-2", new Estado(0, 0, EstadoOperacional.EM_MISSAO, 60, 0.0f));
-        estados.put("R-3", new Estado(2, 1, EstadoOperacional.EM_MISSAO, 10, 2.0f));
-        estados.put("R-4", new Estado(8, 4, EstadoOperacional.EM_MISSAO, 45, 1.2f));
+        estados.put("R-1", new Estado(90, 90, EstadoOperacional.EM_MISSAO, 85, 0.0f));
+        estados.put("R-2", new Estado(20, 20, EstadoOperacional.EM_MISSAO, 60, 0.0f));
+        estados.put("R-3", new Estado(40, 40, EstadoOperacional.EM_MISSAO, 10, 2.0f));
+        estados.put("R-4", new Estado(20, 70, EstadoOperacional.EM_MISSAO, 45, 1.2f));
         estados.put("R-5", new Estado(8.9, 22.6, EstadoOperacional.EM_MISSAO, 95, 0.8f));
+        estados.put("R-6", new Estado(15.3, 30.1, EstadoOperacional.EM_MISSAO, 70, 1.5f));
+        estados.put("R-7", new Estado(25.0, 40.0, EstadoOperacional.EM_MISSAO, 55, 2.2f));
+        estados.put("R-8", new Estado(50.0, 60.0, EstadoOperacional.EM_MISSAO, 30, 1.0f));
 
         new GroundControl(estados);
     }
