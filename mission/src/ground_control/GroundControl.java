@@ -165,6 +165,7 @@ public class GroundControl {
                     int x = (int) (e.getX() * getWidth() / 100);
                     int y = (int) (e.getY() * getHeight() / 100);
                     g.fillOval(x - 5, y - 5, 20, 20);
+                    g.
                }
           }
      }

@@ -105,7 +105,7 @@ public class Rover {
 
     public static void main(String[] args) {
     if(args.length < 4){
-        System.out.println("Uso: java MainRover <id_rover> <ip_rover> <porta_rover> <ip_nave_mae>");
+        System.out.println("Uso: java Rover <id_rover> <ip_rover> <porta_rover> <ip_nave_mae>");
         return;
     }
 

@@ -70,6 +70,9 @@ public class MissionLinkRover {
 
                 try {
                     Mensagem m = receiveMensagem();
+                    if (m == null) {
+                        continue;
+                    }
                     TipoMensagem tp = m.getTipo();
 
                     switch (tp) {

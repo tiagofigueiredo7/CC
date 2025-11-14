@@ -8,6 +8,11 @@ import core.NaveMae;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class MissionLinkNM {
     private final int porta;
@@ -41,14 +46,50 @@ public class MissionLinkNM {
     }
 
     public void startMLNaveMae(NaveMae nm) {
-        Thread t = new Thread(() -> handlerMLNaveMae(nm), "Thread - MissionLinkNM");
-        t.start();
-    }
+        // Mapa de queues por rover (id)
+        Map<String, BlockingQueue<Mensagem>> queues = new ConcurrentHashMap<>();
 
-    public void handlerMLNaveMae(NaveMae nm) {
         while (running) {
             try {
                 Mensagem m = this.receiveMensagem(nm);
+                String id = m.getIdOrg();
+
+                // obtém a queue do rover
+                BlockingQueue<Mensagem> q = queues.computeIfAbsent(id, roverId -> {
+                    BlockingQueue<Mensagem> newQ = new LinkedBlockingQueue<>();
+                    // cria e inicia o handler para o novo rover
+                    new Thread(() -> {
+                        try {
+                            while (true) {
+                                Mensagem msg = newQ.poll(60, TimeUnit.SECONDS);
+                                if (msg == null) {
+                                    // sem mensagens por 60s/rover não está mais a trabalhar 
+                                    // -> encerra handler e remove a queue desse rover
+                                    queues.remove(roverId);
+                                    break;
+                                }
+                                handlerMLNaveMae(msg, nm);
+                            }
+                        } catch (Exception e) {
+                            System.out.println("[ERRO NaveMae - ML] Handler thread for " + roverId + ": " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }, "ML-Handler-" + roverId).start();
+                    return newQ;
+                });
+
+                // adiciona a mensagem à queue do rover que enviou a msg
+                q.offer(m);
+
+            } catch (Exception e) {
+                System.out.println("[ERRO NaveMae - ML] : " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void handlerMLNaveMae(Mensagem m, NaveMae nm) {
+        try {
                 String idRover = m.getIdOrg();
                 TipoMensagem tp = m.getTipo();
                 InetAddress ip_org = nm.getIP();
@@ -59,7 +100,6 @@ public class MissionLinkNM {
 
                 switch (tp) {
                     case ML_SYN -> {
-                        System.out.println("[NaveMae - ML] SYN de: " + idRover);
 
                         Mensagem mSYNACK = new Mensagem(TipoMensagem.ML_SYNACK, 
                                                 "NaveMae", 
@@ -76,13 +116,13 @@ public class MissionLinkNM {
                                             porta_dest,
                                             idRover + "_SYNACK"
                         );
+
+                        System.out.println("[NaveMae - ML] SYNACK enviado ao rover: " + idRover);
                     }
 
                     case ML_REQUEST -> {
                         // Confirma o SYNACK (parar retransmissão)
                         envioML.confirmarRecebimento(idRover + "_SYNACK");
-
-                        System.out.println("[NaveMae - ML] REQUEST de: " + idRover);
 
                         // Enviar missão
                         Missao missao = nm.getMissaoQueue();
@@ -101,6 +141,8 @@ public class MissionLinkNM {
                                             porta_dest,
                                             idRover + "_DATA"
                         );
+
+                        System.out.println("[NaveMae - ML] Missão enviada ao rover: " + idRover);
                     }
 
                     case ML_CONFIRM -> {
@@ -111,11 +153,9 @@ public class MissionLinkNM {
 
                     default -> System.out.println("[ERRO] Tipo não existente: " + tp);
                 }
-
-            } catch (Exception e) {
-                System.out.println("[ERRO NaveMae - ML] Handler: " + e.getMessage());
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            System.out.println("[ERRO NaveMae - ML] Handler: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

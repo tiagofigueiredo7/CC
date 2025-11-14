@@ -1,9 +1,9 @@
 package core;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import data.*;
 //import protocols.tcp.TelemetryStreamNM;
@@ -35,9 +35,9 @@ public class NaveMae {
 
         this.queue = new LinkedBlockingQueue<Missao>();
 
-        this.roversEstado = new HashMap<>();
-        this.roversIP = new HashMap<>();
-        this.roversPorta = new HashMap<>();
+        this.roversEstado = new ConcurrentHashMap<>();
+        this.roversIP = new ConcurrentHashMap<>();
+        this.roversPorta = new ConcurrentHashMap<>();
 
         try {
             this.ml = new MissionLinkNM(this.portaUDP);
@@ -87,9 +87,9 @@ public class NaveMae {
     }
 
     public void startNaveMae(){
-        this.ml.startMLNaveMae(this);
+        new Thread(() -> this.ml.startMLNaveMae(this)).start();
         //this.ts.startTLNaveMae(this);
-        System.out.println("[NaveMae] Todos os serviços foram conectados");
+        System.out.println("[NaveMae] Todos os serviços foram conectados\n");
     }
 
     public void atualizaEstado(){
@@ -98,7 +98,7 @@ public class NaveMae {
 
     public static void main(String[] args) {
         if(args.length < 1){
-            System.out.println("[Uso] java MainNaveMae <ip>");
+            System.out.println("[Uso] java NaveMae <ip>");
             return;
         }
         try{
