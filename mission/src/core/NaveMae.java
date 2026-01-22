@@ -147,7 +147,7 @@ public class NaveMae {
     }
 
     public void startNaveMae(){
-        Parser.parseMissoes(this.queue, "resources/missoes.json");
+        Parser.parseMissoes(this.queue, "resources/final.json");
         this.ml.startMLNaveMae();
         this.ts.startTSNaveMae();
         this.http.start();
