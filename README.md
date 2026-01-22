@@ -9,8 +9,6 @@ Pode consultar o [enunciado](TP_CC_2526.pdf) do projeto e o respetivo [relatóri
 * [luis7788](https://github.com/luis7788)
 * [tiagofigueiredo7](https://github.com/tiagofigueiredo7)
 
-### Nota Final: ?? / 20 ⭐️
-
 ![Interface](background.png)
 
 ## Dependências 
@@ -86,8 +84,6 @@ Group project developed within the scope of the CC course. The project consists 
 * [darteescar](https://github.com/darteescar)
 * [luis7788](https://github.com/luis7788)
 * [tiagofigueiredo7](https://github.com/tiagofigueiredo7)
-
-### Final Grade: ?? / 20 ⭐️
 
 ## Dependencies
 To run the created topologies and test the protocols, you need to have [CORE](https://github.com/eivarin/Dockerized-Coreemu-Template) installed. For **CORE** to have access to the source code, it is necessary that it is in the *volume/* directory, which is shared by Docker and your machine.
